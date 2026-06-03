@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup, Tag 
 from urllib.parse import urljoin
+from typing import TypedDict
 
 def get_heading_from_html(html: str) -> str:
  soup = BeautifulSoup(html, "html.parser")
@@ -32,3 +33,25 @@ def get_images_from_html(html, base_url):
   if img_link is not None:
    images.append(urljoin(base_url, img_link))
  return images
+
+class PageData(TypedDict):
+ url: str
+ heading: str
+ first_paragraph: str
+ outgoing_links: list[str]
+ image_urls: list[str]
+
+def extract_page_data(html: str, page_url: str) -> PageData: 
+  soup = BeautifulSoup(html, "html.parser")
+  heading = get_heading_from_html(html)
+  first_paragraph = get_first_paragraph_from_html(html)
+  links = get_urls_from_html(html, page_url)
+  images = get_images_from_html(html, page_url)
+  layout = {
+   "url" : page_url, 
+   "heading" : heading,
+   "first_paragraph" : first_paragraph,
+   "outgoing_links" : links, 
+   "image_urls" : images
+  }
+  return layout
